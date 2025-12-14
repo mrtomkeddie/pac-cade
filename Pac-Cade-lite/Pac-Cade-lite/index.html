@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Virtual Arcade</title>
+    <link rel="preconnect" href="https://cdn.emulatorjs.org" />
+    <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
+    <link rel="preload" as="script" href="https://cdn.emulatorjs.org/stable/data/loader.js" crossorigin="anonymous" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">Online Arcade</div>
+        <nav class="room-switch">
+          <button class="switch-btn" data-room="arcade">Arcade Room</button>
+          <button class="switch-btn" data-room="console">Console Room</button>
+          <button id="account-btn" class="switch-btn">Account</button>
+        </nav>
+      </header>
+
+      <main id="view-container">
+        <section id="room-arcade" class="room hidden">
+          <div class="room-title">Arcade Room</div>
+          <div class="cabinets-grid" id="arcade-list"></div>
+        </section>
+
+        <section id="room-console" class="room hidden">
+          <div class="room-title">Console Room</div>
+          <div class="console-scene">
+            <div class="crt-wrap">
+              <div class="crt">
+                <div class="crt-glass"></div>
+                <div class="crt-bezel"></div>
+              </div>
+              <div class="console-stand">
+                <div class="console-slot">NES</div>
+                <div class="console-slot">SNES</div>
+                <div class="console-slot">Genesis</div>
+                <div class="console-slot">GBA</div>
+              </div>
+            </div>
+            <div class="games-shelf" id="console-list"></div>
+          </div>
+        </section>
+
+        <section id="game-view" class="game-view hidden">
+          <div class="view-header">
+            <button id="back-to-room" class="back-btn">Back</button>
+            <div class="game-title" id="game-title"></div>
+            <div class="view-actions">
+              <button id="fullscreen-btn" class="action-btn">Fullscreen</button>
+              <button id="controller-btn" class="action-btn">Controller</button>
+              <button id="video-btn" class="action-btn">Video</button>
+              <label class="action-btn file-btn">
+                Load ROM
+                <input id="rom-input" type="file" accept=".nes,.sfc,.smc,.gba,.gb,.gbc,.bin,.gen,.md,.zip" />
+              </label>
+            </div>
+          </div>
+          <div id="controller-panel" class="controller-panel hidden">
+            <div class="panel-header">
+              <div class="panel-title">Controller for this game</div>
+              <button id="controller-close" class="close-btn">×</button>
+            </div>
+            <div id="controller-grid" class="panel-grid"></div>
+            <div class="panel-actions">
+              <button id="controller-save" class="action-btn">Save</button>
+            </div>
+          </div>
+          <div id="theme-arcade" class="theme theme-arcade hidden">
+            <div class="arcade-machine">
+              <div class="arcade-marquee" id="arcade-marquee"></div>
+              <div class="arcade-screen">
+                <div id="emulator" class="emulator-wrap"></div>
+              </div>
+              <div class="arcade-controls"></div>
+            </div>
+          </div>
+          <div id="theme-console" class="theme theme-console hidden">
+            <div class="crt-tv">
+              <div class="crt-frame">
+                <div id="emulator-console" class="emulator-wrap"></div>
+              </div>
+              <div class="tv-stand">
+                <div class="console-model" id="console-model"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="account-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Account</div>
+          <button id="account-close" class="close-btn">×</button>
+        </div>
+        <div class="account-login">
+          <div class="login-row">
+            <input id="login-code" placeholder="XXXX-XXXX" maxlength="9" />
+            <button id="login-btn" class="action-btn">Login</button>
+            <button id="create-btn" class="action-btn">Create</button>
+            <span id="login-warning" class="small-note">No password. Code is your only credential.</span>
+          </div>
+          <div class="session-row hidden" id="session-row">
+            <span id="session-code"></span>
+            <button id="logout-btn" class="action-btn">Logout</button>
+          </div>
+        </div>
+        <div class="tabbar">
+          <button class="tab-btn active" data-tab="saves">Saves</button>
+          <button class="tab-btn" data-tab="favorites">Favorites</button>
+          <button class="tab-btn" data-tab="friends">Friends</button>
+          <button class="tab-btn" data-tab="profile">Profile</button>
+          <button class="tab-btn" data-tab="backup">Backup</button>
+        </div>
+        <div class="tab-content">
+          <div id="tab-saves" class="tab-pane active">
+            <div class="pane-row">
+              <label>Game</label>
+              <input id="saves-game" placeholder="ROM name" />
+              <label>Slot</label>
+              <input id="saves-slot" type="number" min="0" max="9" value="0" />
+              <button id="save-capture" class="action-btn">Save</button>
+              <button id="save-load" class="action-btn">Load</button>
+            </div>
+            <div id="saves-list" class="list"></div>
+          </div>
+          <div id="tab-favorites" class="tab-pane">
+            <div id="favorites-list" class="list"></div>
+          </div>
+          <div id="tab-friends" class="tab-pane">
+            <div class="pane-row">
+              <input id="friend-code" placeholder="XXXX-XXXX" maxlength="9" />
+              <button id="friend-add" class="action-btn">Add</button>
+            </div>
+            <div id="friends-list" class="list"></div>
+            <div class="pane-row">
+              <input id="message-text" placeholder="Message" />
+              <button id="message-send" class="action-btn">Send</button>
+            </div>
+            <div id="messages-list" class="list"></div>
+          </div>
+          <div id="tab-profile" class="tab-pane">
+            <div class="pane-row">
+              <input id="display-name" placeholder="Display name" />
+              <input id="status-message" placeholder="Status" />
+              <input id="avatar-url" placeholder="Avatar URL" />
+              <button id="profile-update" class="action-btn">Update</button>
+            </div>
+          </div>
+          <div id="tab-backup" class="tab-pane">
+            <div class="pane-row">
+              <button id="backup-export" class="action-btn">Export</button>
+              <label class="action-btn file-btn">
+                Import
+                <input id="backup-import" type="file" accept="application/json" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="video-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Video Settings</div>
+          <button id="video-close" class="close-btn">×</button>
+        </div>
+        <div class="pane-row">
+          <label>Scaling Mode</label>
+          <select id="scale-mode">
+            <option value="fit">Fit (letterbox)</option>
+            <option value="stretch">Stretch (fill)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>

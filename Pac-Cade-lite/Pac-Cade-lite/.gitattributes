@@ -1,0 +1,8 @@
+*.chd filter=lfs diff=lfs merge=lfs -text
+*.zip !text !filter !merge !diff
+*.z64 !text !filter !merge !diff
+*.nds !text !filter !merge !diff
+*.gbc !text !filter !merge !diff
+*.gba !text !filter !merge !diff
+*.nes !text !filter !merge !diff
+*.bin !text !filter !merge !diff

@@ -1,0 +1,19 @@
+{
+  "arcade": [
+    { "name": "Pac-Man", "core": "mame2003", "rom": "pacman.zip", "aspect": "3/4", "image": "public/pacman.png" },
+    { "name": "Donkey Kong", "core": "mame2003", "rom": "dkong.zip", "aspect": "3/4", "image": "public/donkeykong.png" },
+    { "name": "Donkey Kong Jr.", "core": "mame2003", "rom": "dkongjr.zip", "aspect": "3/4", "image": "public/dkjr.png" },
+    { "name": "Mario Bros.", "core": "mame2003", "rom": "mario.zip", "aspect": "4/3", "image": "public/mariobros.png" },
+    { "name": "Space Invaders", "core": "mame2003", "rom": "invaders.zip", "aspect": "1/1", "image": "public/spaceinvaders.png" },
+    { "name": "Super Street Fighter II Turbo", "core": "mame32", "rom": "ssf2t.zip", "aspect": "4/3", "image": "public/ssf2.png" },
+    { "name": "The Simpsons", "core": "mame32", "rom": "simpsons2p.zip", "aspect": "4/3", "image": "public/simpsons.png" }
+  ],
+  "console": [
+    { "name": "Super Mario Bros.", "core": "nes", "rom": "Super Mario Bros.nes", "image": "public/supermariobros.png" }
+    , { "name": "Super Mario Bros. Deluxe", "core": "gbc", "rom": "Super Mario Bros. Deluxe.gbc", "aspect": "10/9", "image": "public/supermariobrosdeluxe.png" }
+    , { "name": "Mario Kart 64", "core": "n64", "rom": "Mario Kart 64.z64", "aspect": "4/3", "image": "public/mariokart64.png" }
+    , { "name": "Banjo-Kazooie", "core": "n64", "rom": "Banjo-Kazooie.z64", "aspect": "4/3", "image": "public/banjo.png" }
+    , { "name": "Super Mario World", "core": "snes", "rom": "Super Mario World.sfc", "aspect": "4/3", "image": "public/supermarioworld.png" }
+    , { "name": "Super Mario Kart", "core": "snes", "rom": "Super Mario Kart.sfc", "aspect": "4/3", "image": "public/supermariokart.png" }
+  ]
+}

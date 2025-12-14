@@ -1,0 +1,9 @@
+# Build artifacts
+*.log
+*.tmp
+*.cache
+dist/
+build/
+node_modules/
+_release_extract/
+*.chd

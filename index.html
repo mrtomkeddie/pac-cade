@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pac-Cade</title>
+  <link rel="preconnect" href="https://cdn.emulatorjs.org" />
+  <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
+  <link rel="preload" as="script" href="https://cdn.emulatorjs.org/stable/data/loader.js" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles-v4.css" />
+</head>
+
+<body>
+  <div class="scanlines"></div>
+  <div class="bg-grid"></div>
+  
+  <header class="topbar">
+    <div class="brand">Pac-Cade</div>
+    <nav class="room-switch">
+      <button class="switch-btn" data-room="arcade">Arcade Room</button>
+      <button class="switch-btn" data-room="console">Console Room</button>
+      <button id="account-btn" class="switch-btn">Account</button>
+    </nav>
+  </header>
+
+  <main id="view-container">
+    <section id="room-arcade" class="room hidden">
+      <div class="room-title">Arcade Room</div>
+      <div class="cabinets-grid" id="arcade-list"></div>
+    </section>
+
+    <section id="room-console" class="room hidden">
+      <div class="room-title">Console Room</div>
+      <div class="console-scene">
+        <div class="crt-wrap">
+          <div class="tv-unit">
+            <div class="tv-body">
+              <div class="tv-screen-bezel">
+                <div class="tv-screen">
+                  <img src="public/start.png" alt="Start" class="tv-start-img" />
+                  <svg class="tv-static" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <filter id="tv-noise">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="2">
+                        <animate attributeName="seed" from="0" to="100" dur="2s" repeatCount="indefinite" />
+                      </feTurbulence>
+                    </filter>
+                    <rect width="100%" height="100%" filter="url(#tv-noise)" />
+                  </svg>
+                  <div class="crt-glass"></div>
+                </div>
+              </div>
+              <div class="tv-bottom-panel">
+                <div class="tv-speaker"></div>
+                <div class="tv-controls">
+                  <div class="tv-input-label">VIDEO 1</div>
+                  <div class="tv-btn"></div>
+                  <div class="tv-btn"></div>
+                  <div class="tv-power-btn"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="games-shelf" id="console-list"></div>
+      </div>
+    </section>
+
+    <section id="game-view" class="game-view hidden">
+      
+      <div id="controller-panel" class="controller-panel hidden">
+        <div class="panel-header">
+          <button id="controller-close" class="close-btn">×</button>
+        </div>
+        <div id="controller-grid" class="panel-grid"></div>
+      </div>
+      <div id="theme-arcade" class="theme theme-arcade hidden">
+        <div class="arcade-simple">
+          <div class="play-bezel">
+            <button id="fullscreen-btn" class="action-btn fs-float">Fullscreen</button>
+            <div id="emulator" class="emulator-wrap"></div>
+            <div class="frame-glare"></div>
+          </div>
+        </div>
+      </div>
+      <div id="theme-console" class="theme theme-console hidden">
+        <div class="tv-unit">
+          <div class="tv-body">
+            <div class="tv-screen-bezel">
+              <div class="tv-screen">
+                <div id="emulator-console" class="emulator-wrap"></div>
+                <div class="crt-glass"></div>
+              </div>
+            </div>
+            <div class="tv-bottom-panel">
+              <div class="tv-speaker"></div>
+              <div class="tv-controls">
+                <div class="tv-input-label" id="console-model">VIDEO 1</div>
+                <div class="tv-btn"></div>
+                <div class="tv-btn"></div>
+                <button id="fullscreen-tv-btn" class="tv-btn tv-fs-btn">FS</button>
+                <div class="tv-power-btn"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="controls-info" class="controls-info">
+        <div class="controls-line"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> or Arrow Keys — Move</div>
+        <div class="controls-line"><span class="key">Space</span> — Jump / Action</div>
+        <div class="controls-line"><span class="key">Enter</span> — Start / Confirm</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="account-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Account</div>
+        <button id="account-close" class="close-btn">×</button>
+      </div>
+      <div class="account-login">
+        <div class="login-row">
+          <input id="login-code" placeholder="XXXX-XXXX" maxlength="9" />
+          <button id="login-btn" class="action-btn">Login</button>
+          <button id="create-btn" class="action-btn">Create</button>
+          <span id="login-warning" class="small-note">No password. Code is your only credential.</span>
+        </div>
+        <div class="session-row hidden" id="session-row">
+          <span id="session-code"></span>
+          <button id="logout-btn" class="action-btn">Logout</button>
+        </div>
+      </div>
+      <div class="tabbar">
+        <button class="tab-btn active" data-tab="saves">Saves</button>
+        <button class="tab-btn" data-tab="favorites">Favorites</button>
+        <button class="tab-btn" data-tab="friends">Friends</button>
+        <button class="tab-btn" data-tab="profile">Profile</button>
+        <button class="tab-btn" data-tab="backup">Backup</button>
+      </div>
+      <div class="tab-content">
+        <div id="tab-saves" class="tab-pane active">
+          <div class="pane-row">
+            <label>Game</label>
+            <input id="saves-game" placeholder="ROM name" />
+            <label>Slot</label>
+            <input id="saves-slot" type="number" min="0" max="9" value="0" />
+            <button id="save-capture" class="action-btn">Save</button>
+            <button id="save-load" class="action-btn">Load</button>
+          </div>
+          <div id="saves-list" class="list"></div>
+        </div>
+        <div id="tab-favorites" class="tab-pane">
+          <div id="favorites-list" class="list"></div>
+        </div>
+        <div id="tab-friends" class="tab-pane">
+          <div class="pane-row">
+            <input id="friend-code" placeholder="XXXX-XXXX" maxlength="9" />
+            <button id="friend-add" class="action-btn">Add</button>
+          </div>
+          <div id="friends-list" class="list"></div>
+          <div class="pane-row">
+            <input id="message-text" placeholder="Message" />
+            <button id="message-send" class="action-btn">Send</button>
+          </div>
+          <div id="messages-list" class="list"></div>
+        </div>
+        <div id="tab-profile" class="tab-pane">
+          <div class="pane-row">
+            <input id="display-name" placeholder="Display name" />
+            <input id="status-message" placeholder="Status" />
+            <input id="avatar-url" placeholder="Avatar URL" />
+            <button id="profile-update" class="action-btn">Update</button>
+          </div>
+        </div>
+        <div id="tab-backup" class="tab-pane">
+          <div class="pane-row">
+            <button id="backup-export" class="action-btn">Export</button>
+            <label class="action-btn file-btn">
+              Import
+              <input id="backup-import" type="file" accept="application/json" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="video-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Video Settings</div>
+        <button id="video-close" class="close-btn">×</button>
+      </div>
+      <div class="pane-row">
+        <label>Scaling Mode</label>
+        <select id="scale-mode">
+          <option value="fit">Fit (letterbox)</option>
+          <option value="stretch">Stretch (fill)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

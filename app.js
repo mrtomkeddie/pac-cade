@@ -594,7 +594,14 @@ async function startEmulatorUrl(core, url, theme) {
   const coreLower = String(core || '').toLowerCase();
   if (coreLower === 'mame2003' || coreLower === 'mame32') {
     const absUrl = new URL(url, location.href).toString();
-    await startArcadeEJSFromUrl(absUrl, theme);
+    const res = await fetch(absUrl, { cache: 'no-store' });
+    if (!res.ok) { 
+        const t = qs('#game-title'); if (t) t.textContent = 'ROM HTTP ' + res.status; 
+        return; 
+    }
+    const data = new Uint8Array(await res.arrayBuffer());
+    const nm = absUrl.split('/').pop().replace(/\.[^/.]+$/, "");
+    await startArcadeEJSFromData(nm, data, theme);
     return;
   }
   if (String(core || '').toLowerCase() === 'segacd' || String(core || '').toLowerCase() === 'sega cd') {
@@ -686,19 +693,19 @@ async function startEmulatorUrl(core, url, theme) {
   document.body.appendChild(s);
 }
 
-async function startArcadeEJSFromUrl(url, theme) {
+async function startArcadeEJSFromData(name, data, theme) {
   try {
     const container = theme === 'arcade' ? qs('#emulator') : qs('#emulator-console');
     container.innerHTML = '';
+    const blobUrl = URL.createObjectURL(new Blob([data], { type: 'application/zip' }));
     window.EJS_player = theme === 'arcade' ? '#emulator' : '#emulator-console';
     window.EJS_core = 'mame2003';
-    window.EJS_gameUrl = url;
+    window.EJS_gameUrl = blobUrl;
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.emulatorjs = window.emulatorjs || {};
     window.EJS_enable_savestates = true;
     window.EJS_enable_sound = true;
     window.EJS_gamepad = true;
-    const name = url.split('/').pop().replace(/\.[^/.]+$/, "");
     window.EJS_gameName = name;
     
     const t = qs('#game-title'); if (t) t.textContent = 'Starting arcade emulator…';

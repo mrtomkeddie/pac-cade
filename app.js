@@ -693,7 +693,7 @@ async function startArcadeEJSFromData(name, data, theme) {
     window.EJS_enable_savestates = true;
     window.EJS_enable_sound = true;
     window.EJS_gamepad = true;
-    window.EJS_startOnLoaded = true;
+    window.EJS_gameName = name;
     const t = qs('#game-title'); if (t) t.textContent = 'Starting arcade emulator…';
     const s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';

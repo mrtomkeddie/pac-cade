@@ -591,6 +591,12 @@ async function startEmulator(core, file, theme) {
 async function startEmulatorUrl(core, url, theme) {
   if (String(core || '').toLowerCase() === 'n64') { await startN64FromUrl(url, theme); return; }
   if (String(core || '').toLowerCase() === 'ds' || String(core || '').toLowerCase() === 'nds') { await startDSFromUrl(url, theme); return; }
+  const coreLower = String(core || '').toLowerCase();
+  if (coreLower === 'mame2003' || coreLower === 'mame32') {
+    const absUrl = new URL(url, location.href).toString();
+    await startArcadeEJSFromUrl(absUrl, theme);
+    return;
+  }
   if (String(core || '').toLowerCase() === 'segacd' || String(core || '').toLowerCase() === 'sega cd') {
     try {
       const u = new URL(url, location.href).toString();
@@ -680,50 +686,28 @@ async function startEmulatorUrl(core, url, theme) {
   document.body.appendChild(s);
 }
 
-async function startArcadeEJSFromData(name, data, theme) {
+async function startArcadeEJSFromUrl(url, theme) {
   try {
     const container = theme === 'arcade' ? qs('#emulator') : qs('#emulator-console');
     container.innerHTML = '';
-    const blobUrl = URL.createObjectURL(new Blob([data], { type: 'application/zip' }));
     window.EJS_player = theme === 'arcade' ? '#emulator' : '#emulator-console';
     window.EJS_core = 'mame2003';
-    window.EJS_gameUrl = blobUrl;
+    window.EJS_gameUrl = url;
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
     window.emulatorjs = window.emulatorjs || {};
     window.EJS_enable_savestates = true;
     window.EJS_enable_sound = true;
     window.EJS_gamepad = true;
+    const name = url.split('/').pop().replace(/\.[^/.]+$/, "");
     window.EJS_gameName = name;
+    
     const t = qs('#game-title'); if (t) t.textContent = 'Starting arcade emulator…';
     const s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
     try { s.crossOrigin = 'anonymous'; } catch {}
     s.async = true;
-    s.onload = () => { try { const t2 = qs('#game-title'); if (t2) t2.textContent = name.replace(/\.[^/.]+$/, ''); } catch {} };
-    s.onerror = () => {
-      try {
-        const t2 = qs('#game-title'); if (t2) t2.textContent = 'Arcade loader failed — using fallback';
-        setEmulatrixGlobals(name, data);
-        mountEmulatrix(theme, 'Emulatrix_MAME2003.htm');
-      } catch {}
-    };
+    s.onload = () => { try { const t2 = qs('#game-title'); if (t2) t2.textContent = name; } catch {} };
     document.body.appendChild(s);
-    setTimeout(() => {
-      try {
-        if (!window.EJS_emulator && !window.EmulatorJS) {
-          const t3 = qs('#game-title'); if (t3) t3.textContent = 'Arcade loader pending…';
-        }
-      } catch {}
-    }, 1200);
-    setTimeout(() => {
-      try {
-        if (!window.EJS_emulator && !window.EmulatorJS) {
-          const t4 = qs('#game-title'); if (t4) t4.textContent = 'Switching to local arcade engine…';
-          setEmulatrixGlobals(name, data);
-          mountEmulatrix(theme, 'Emulatrix_MAME2003.htm');
-        }
-      } catch {}
-    }, 3500);
   } catch (e) {
     try { const t = qs('#game-title'); if (t) t.textContent = 'Arcade start error: ' + String(e?.message || e); } catch {}
   }

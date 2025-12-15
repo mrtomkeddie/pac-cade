@@ -14,7 +14,6 @@ const DEFAULT_GAMES = {
     { name: 'Mario Bros.', core: 'mame2003', rom: 'mario.zip', aspect: '4/3' },
     { name: 'Space Invaders', core: 'mame2003', rom: 'invaders.zip', aspect: '1/1' },
     { name: 'Super Street Fighter II Turbo', core: 'mame32', rom: 'ssf2t.zip', aspect: '4/3' },
-    { name: 'Marvel Vs Capcom', core: 'mame32', rom: 'mvsc.zip', aspect: '4/3' },
     { name: 'The Simpsons', core: 'mame32', rom: 'simpsons2p.zip', aspect: '4/3' },
   ],
   console: [
@@ -22,7 +21,6 @@ const DEFAULT_GAMES = {
     { name: 'Super Mario Bros. Deluxe', core: 'gbc', rom: 'Super Mario Bros. Deluxe.gbc', aspect: '10/9' },
     { name: 'Mario Kart 64', core: 'n64', rom: 'Mario Kart 64.z64', aspect: '4/3' },
     { name: 'Banjo-Kazooie', core: 'n64', rom: 'Banjo-Kazooie.z64', aspect: '4/3' },
-    { name: 'Plants vs. Zombies', core: 'ds', rom: 'Plants vs. Zombies.nds', aspect: '2/3' },
     { name: 'Super Mario World', core: 'snes', rom: 'Super Mario World.sfc', aspect: '4/3' },
     { name: 'Super Mario Kart', core: 'snes', rom: 'Super Mario Kart.sfc', aspect: '4/3' },
   ],

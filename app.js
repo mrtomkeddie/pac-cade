@@ -592,6 +592,17 @@ async function startEmulatorUrl(core, url, theme) {
   if (String(core || '').toLowerCase() === 'n64') { await startN64FromUrl(url, theme); return; }
   if (String(core || '').toLowerCase() === 'ds' || String(core || '').toLowerCase() === 'nds') { await startDSFromUrl(url, theme); return; }
   try {
+    const coreLower = String(core || '').toLowerCase();
+    if (coreLower === 'mame2003' || coreLower === 'mame32') {
+      const absUrl = new URL(url, location.href).toString();
+      const res = await fetch(absUrl, { cache: 'no-store' });
+      const nm = absUrl.split('/').pop() || 'game.zip';
+      const t = qs('#game-title'); if (t) t.textContent = 'Loading ' + nm + '...';
+      if (!res.ok) { if (t) t.textContent = 'ROM HTTP ' + res.status; return; }
+      const data = new Uint8Array(await res.arrayBuffer());
+      await startArcadeEJSFromData(nm, data, theme);
+      return;
+    }
     const nm = (url || '').split('/').pop() || '';
     const ext = String(nm.split('.').pop() || '').toLowerCase();
     if (theme === 'arcade' && ext === 'zip') {

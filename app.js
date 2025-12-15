@@ -591,32 +591,6 @@ async function startEmulator(core, file, theme) {
 async function startEmulatorUrl(core, url, theme) {
   if (String(core || '').toLowerCase() === 'n64') { await startN64FromUrl(url, theme); return; }
   if (String(core || '').toLowerCase() === 'ds' || String(core || '').toLowerCase() === 'nds') { await startDSFromUrl(url, theme); return; }
-  try {
-    const coreLower = String(core || '').toLowerCase();
-    if (coreLower === 'mame2003' || coreLower === 'mame32') {
-      const absUrl = new URL(url, location.href).toString();
-      const res = await fetch(absUrl, { cache: 'no-store' });
-      const nm = absUrl.split('/').pop() || 'game.zip';
-      const t = qs('#game-title'); if (t) t.textContent = 'Loading ' + nm + '...';
-      if (!res.ok) { if (t) t.textContent = 'ROM HTTP ' + res.status; return; }
-      const data = new Uint8Array(await res.arrayBuffer());
-      await startArcadeEJSFromData(nm, data, theme);
-      return;
-    }
-    const nm = (url || '').split('/').pop() || '';
-    const ext = String(nm.split('.').pop() || '').toLowerCase();
-    if (theme === 'arcade' && ext === 'zip') {
-      const abs = new URL(url, location.href).toString();
-      const res = await fetch(abs, { cache: 'no-store' });
-      const t = qs('#game-title'); if (t) t.textContent = 'Loading ' + nm + '...';
-      if (!res.ok) { if (t) t.textContent = 'ROM HTTP ' + res.status; return; }
-      const data = new Uint8Array(await res.arrayBuffer());
-      setEmulatrixGlobals(nm || 'game.zip', data);
-      const html = (String(core || '').toLowerCase() === 'mame32') ? 'Emulatrix_MAME32.htm' : 'Emulatrix_MAME2003.htm';
-      mountEmulatrix(theme, html);
-      return;
-    }
-  } catch {}
   if (String(core || '').toLowerCase() === 'segacd' || String(core || '').toLowerCase() === 'sega cd') {
     try {
       const u = new URL(url, location.href).toString();
@@ -646,8 +620,8 @@ async function startEmulatorUrl(core, url, theme) {
   }
   const innerCandidate = await preferEmulatrix(core, url);
   function mapInner(coreName, path) {
-    const ext = String(path||'').split('.').pop().toLowerCase();
-    const c = String(coreName||'').toLowerCase();
+    const ext = String(path || '').split('.').pop().toLowerCase();
+    const c = String(coreName || '').toLowerCase();
     const map = {
       nes: 'Emulatrix_Nintendo.htm',
       snes: 'Emulatrix_SuperNintendo.htm',
@@ -658,7 +632,7 @@ async function startEmulatorUrl(core, url, theme) {
       mame2003: 'Emulatrix_MAME2003.htm',
       mame32: 'Emulatrix_MAME32.htm',
     };
-    return map[c] || (ext==='zip' ? 'Emulatrix_MAME2003.htm' : null);
+    return map[c] || (ext === 'zip' ? 'Emulatrix_MAME2003.htm' : null);
   }
   const fallbackInner = mapInner(core, url);
   if (innerCandidate || fallbackInner) { await startEmulatrixFromUrl(url, theme, innerCandidate || fallbackInner); return; }
@@ -719,6 +693,7 @@ async function startArcadeEJSFromData(name, data, theme) {
     window.EJS_enable_savestates = true;
     window.EJS_enable_sound = true;
     window.EJS_gamepad = true;
+    window.EJS_startOnLoaded = true;
     const t = qs('#game-title'); if (t) t.textContent = 'Starting arcade emulator…';
     const s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
